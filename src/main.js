@@ -28,19 +28,19 @@ function calculateSimpleRevenue(purchase, _product) {
 function calculateBonusByProfit(index, total, seller) {
   // 15% — для продавца, который принёс наибольшую прибыль (первое место)
   if (index === 0) {
-    return 0.15;
+    return 0.15*1000 ;
   }
   // 10% — для продавцов, которые оказались на втором и третьем месте по прибыли
   else if (index === 1 || index === 2) {
-    return 0.1;
+    return 0.1*1000;
   }
   // 0% — для продавца, который оказался на последнем месте
   else if (index === total - 1) {
-    return 0.0;
+    return 0.0*1000;
   }
   // 5% — для всех остальных продавцов
   else {
-    return 0.05;
+    return 0.05*1000;
   }
 }
 
@@ -49,7 +49,7 @@ function calculateBonusByProfit(index, total, seller) {
  * @param {Object} data - входные данные о продажах
  * @param {Object} options - настройки расчета
  * @param {Function} options.calculateRevenue - функция расчета выручки
- * @param {Function} options.calculateBonus - функция расчета бонусов
+ * @param {Function} options.calculateBonusByProfit - функция расчета бонусов
  * @returns {Array} - отсортированный массив продавцов с данными о бонусах
  */
 function analyzeSalesData(data, options) {
@@ -58,15 +58,15 @@ function analyzeSalesData(data, options) {
     throw new Error("Данные не предоставлены или имеют неверный формат");
   }
 
-  if (!data.purchase_records || !Array.isArray(data.purchase_records)) {
+  if (!data.purchase_records || !Array.isArray(data.purchase_records) || data.purchase_records.length === 0) {
     throw new Error("Отсутствуют или некорректны записи о покупках");
   }
 
-  if (!data.products || !Array.isArray(data.products)) {
+  if (!data.products || !Array.isArray(data.products) || data.products.length === 0) {
     throw new Error("Отсутствуют или некорректны данные о товарах");
   }
 
-  if (!data.sellers || !Array.isArray(data.sellers)) {
+  if (!data.sellers || !Array.isArray(data.sellers) || data.sellers.length === 0) {
     throw new Error("Отсутствуют или некорректны данные о продавцах");
   }
 
@@ -75,14 +75,14 @@ function analyzeSalesData(data, options) {
     throw new Error("Опции не предоставлены");
   }
 
-  const { calculateRevenue, calculateBonus } = options;
+  const { calculateRevenue, calculateBonusByProfit } = options;
 
   if (typeof calculateRevenue !== "function") {
     throw new Error("Функция calculateRevenue не предоставлена");
   }
 
-  if (typeof calculateBonus !== "function") {
-    throw new Error("Функция calculateBonus не предоставлена");
+  if (typeof calculateBonusByProfit !== "function") {
+    throw new Error("Функция calculateBonusByProfit не предоставлена");
   }
 
   // Подготовка промежуточных данных для сбора статистики
@@ -157,8 +157,8 @@ function analyzeSalesData(data, options) {
   // Назначение премий на основе ранжирования
   const totalSellers = sortedSellers.length;
   const sellersWithBonuses = sortedSellers.map((seller, index) => {
-    // Посчитать бонус, используя функцию calculateBonus
-    const bonusRate = calculateBonus(index, totalSellers, seller);
+    // Посчитать бонус, используя функцию calculateBonusByProfit
+    const bonusRate = calculateBonusByProfit(index, totalSellers, seller);
     const bonusAmount = seller.profit * bonusRate;
 
     // Записать в поле bonus полученное значение
@@ -191,8 +191,6 @@ function analyzeSalesData(data, options) {
     top_products: seller.top_products.map((product) => ({
       sku: product.sku,
       quantity: product.quantity,
-      revenue: product.revenue,
-      profit: product.profit,
     })),
     bonus: seller.bonus,
   }));
