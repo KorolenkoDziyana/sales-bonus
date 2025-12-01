@@ -48,7 +48,7 @@ function calculateBonusByProfit(index, total, seller) {
  * Главная функция анализа данных продаж
  * @param {Object} data - входные данные о продажах
  * @param {Object} options - настройки расчета
- * @param {Function} options.calculateRevenue - функция расчета выручки
+ * @param {Function} options.calculateSimpleRevenue - функция расчета выручки
  * @param {Function} options.calculateBonusByProfit - функция расчета бонусов
  * @returns {Array} - отсортированный массив продавцов с данными о бонусах
  */
@@ -75,10 +75,10 @@ function analyzeSalesData(data, options) {
     throw new Error("Опции не предоставлены");
   }
 
-  const { calculateRevenue, calculateBonusByProfit } = options;
+  const { calculateSimpleRevenue, calculateBonusByProfit } = options;
 
-  if (typeof calculateRevenue !== "function") {
-    throw new Error("Функция calculateRevenue не предоставлена");
+  if (typeof calculateSimpleRevenue !== "function") {
+    throw new Error("Функция calculateSimpleRevenue не предоставлена");
   }
 
   if (typeof calculateBonusByProfit !== "function") {
@@ -125,8 +125,8 @@ function analyzeSalesData(data, options) {
       // Посчитать себестоимость (cost) товара
       const cost = product.purchase_price * item.quantity;
 
-      // Посчитать выручку (revenue) с учётом скидки через функцию calculateRevenue
-      const revenue = calculateRevenue(item, product);
+      // Посчитать выручку (revenue) с учётом скидки через функцию calculateSimpleRevenue
+      const revenue = calculateSimpleRevenue(item, product);
 
       // Посчитать прибыль: выручка минус себестоимость
       const profit = revenue - cost;
