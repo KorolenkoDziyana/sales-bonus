@@ -11,7 +11,7 @@ function calculateSimpleRevenue(purchase, _product) {
   const { discount, sale_price, quantity } = purchase;
 
   // Записываем в константу discount коэффициент для расчета суммы без скидки в десятичном формате
-  const discountCoefficient = 1 - discount / 100;
+  const discountCoefficient = 1 - (discount / 100);
 
   // Возвращаем выручку, рассчитанную по формуле: sale_price × quantity × discountCoefficient
   return sale_price * quantity * discountCoefficient;
@@ -78,7 +78,7 @@ function analyzeSalesData(data, options) {
   const { calculateRevenue, calculateBonus } = options;
 
   if (typeof calculateRevenue !== "function") {
-    throw new Error("Функция calculateSimpleRevenue не предоставлена");
+    throw new Error("Функция calculateRevenue не предоставлена");
   }
 
   if (typeof calculateBonus !== "function") {
@@ -112,7 +112,8 @@ function analyzeSalesData(data, options) {
 
     // Увеличить количество продаж
     seller.sales_count += 1;
-
+    seller.revenue += record.total_amount;
+    
     // Расчёт прибыли для каждого товара
     record.items.forEach((item) => {
       const product = productIndex[item.sku];
@@ -122,7 +123,7 @@ function analyzeSalesData(data, options) {
       // Посчитать себестоимость (cost) товара
       const cost = product.purchase_price * item.quantity;
 
-      // Посчитать выручку (revenue) с учётом скидки через функцию calculateSimpleRevenue
+      // Посчитать выручку (revenue) с учётом скидки через функцию calculateRevenue
       const revenue = calculateRevenue(item, product);
 
       // Посчитать прибыль: выручка минус себестоимость
@@ -130,8 +131,8 @@ function analyzeSalesData(data, options) {
 
       // Увеличить общую накопленную прибыль у продавца
       seller.profit += profit;
-// Увеличить общую сумму всех продаж
-    seller.revenue += revenue.toFixed(2);
+      // Увеличить общую сумму всех продаж
+      // seller.revenue += revenue;
       // Учёт количества проданных товаров
       if (!seller.products_sold[item.sku]) {
     // ИНИЦИАЛИЗИРУЕМ КАК ОБЪЕКТ
