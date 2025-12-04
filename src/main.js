@@ -131,7 +131,7 @@ function analyzeSalesData(data, options) {
       // Увеличить общую накопленную прибыль у продавца
       seller.profit += profit;
 // Увеличить общую сумму всех продаж
-    seller.revenue += revenue;
+    seller.revenue += record.total_amount;
       // Учёт количества проданных товаров
       if (!seller.products_sold[item.sku]) {
     // ИНИЦИАЛИЗИРУЕМ КАК ОБЪЕКТ
