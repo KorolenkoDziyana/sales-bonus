@@ -134,12 +134,7 @@ function analyzeSalesData(data, options) {
     seller.revenue += revenue;
       // Учёт количества проданных товаров
       if (!seller.products_sold[item.sku]) {
-        seller.products_sold[item.sku] = {
-          quantity: 0,
-          revenue: 0,
-          profit: 0,
-          name: product.name,
-        };
+        seller.products_sold[item.sku] = 0; // ТОЛЬКО ЧИСЛО, НЕ ОБЪЕКТ!
       }
 
       // По артикулу товара увеличить его проданное количество у продавца
